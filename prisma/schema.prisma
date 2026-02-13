@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Business {
+  id                 String    @id @default(uuid())
+  name               String
+  email              String    @unique
+  walletAddress      String?   @map("wallet_address")
+  mercuryAccountId   String?   @map("mercury_account_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  employees          Employee[]
+  payrollTransactions PayrollTransaction[]
+  payrollBatches     PayrollBatch[]
+
+  @@map("businesses")
+}
+
+model Employee {
+  id             String   @id @default(uuid())
+  businessId     String   @map("business_id")
+  name           String
+  email          String
+  walletAddress  String   @map("wallet_address")
+  salaryAmount   Decimal  @map("salary_amount") @db.Decimal(10, 2)
+  salaryCurrency String   @default("USDC") @map("salary_currency")
+  country        String?
+  status         String   @default("active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  business         Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  payrollTransactions PayrollTransaction[]
+
+  @@unique([businessId, email])
+  @@map("employees")
+}
+
+model PayrollTransaction {
+  id         String   @id @default(uuid())
+  businessId String   @map("business_id")
+  employeeId String?  @map("employee_id")
+  amount     Decimal  @db.Decimal(10, 2)
+  currency  String   @default("USDC")
+  txHash    String?  @map("tx_hash")
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employee Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+
+  @@map("payroll_transactions")
+}
+
+model PayrollBatch {
+  id           String   @id @default(uuid())
+  businessId   String   @map("business_id")
+  totalAmount  Decimal  @map("total_amount") @db.Decimal(10, 2)
+  employeeCount Int     @map("employee_count")
+  batchTxHash  String?  @map("batch_tx_hash")
+  status       String   @default("pending")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_batches")
+}
