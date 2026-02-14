@@ -76,14 +76,13 @@ CREATE TABLE IF NOT EXISTS withdrawal_requests (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Migrations for existing databases (run if tables already exist without new columns)
--- ALTER TABLE employees ADD COLUMN IF NOT EXISTS auto_convert BOOLEAN DEFAULT false;
--- ALTER TABLE employees ADD COLUMN IF NOT EXISTS target_currency TEXT DEFAULT 'USDC';
--- ALTER TABLE payroll_transactions ADD COLUMN IF NOT EXISTS display_currency TEXT;
--- ALTER TABLE payroll_transactions ADD COLUMN IF NOT EXISTS display_amount DECIMAL(10, 2);
+ ALTER TABLE employees ADD COLUMN IF NOT EXISTS auto_convert BOOLEAN DEFAULT false;
+ ALTER TABLE employees ADD COLUMN IF NOT EXISTS target_currency TEXT DEFAULT 'USDC';
+ ALTER TABLE payroll_transactions ADD COLUMN IF NOT EXISTS display_currency TEXT;
+ ALTER TABLE payroll_transactions ADD COLUMN IF NOT EXISTS display_amount DECIMAL(10, 2);
 
 -- Enable RLS (optional; adjust policies per your auth model)
--- ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE payroll_transactions ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE payroll_batches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payroll_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payroll_batches ENABLE ROW LEVEL SECURITY;

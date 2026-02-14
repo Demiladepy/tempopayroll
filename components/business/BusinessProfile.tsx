@@ -64,7 +64,7 @@ export function BusinessProfile({ business, onUpdate }: BusinessProfileProps) {
 
   return (
     <>
-      <Card className="p-6">
+      <Card className="rounded-2xl border-border/60 bg-card/50 p-6 shadow-fintech">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="flex items-center gap-2 text-lg font-semibold">

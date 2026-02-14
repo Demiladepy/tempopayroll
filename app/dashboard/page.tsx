@@ -104,17 +104,24 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <AddEmployeeModal businessId={businessId} onAdd={addEmployee} />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background">
+      <div className="mx-auto max-w-4xl space-y-8 px-1 py-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Manage payroll and your team</p>
+          </div>
+          <AddEmployeeModal businessId={businessId} onAdd={addEmployee} />
+        </div>
 
-      <BusinessProfile business={business} onUpdate={updateBusiness} />
-      <MercuryBalance />
-      <AIAssistantCard businessId={businessId} />
+        <div className="grid gap-6 sm:grid-cols-2">
+          <BusinessProfile business={business} onUpdate={updateBusiness} />
+          <MercuryBalance />
+        </div>
 
-      <section>
+        <AIAssistantCard businessId={businessId} />
+
+      <section className="rounded-2xl border border-border/60 bg-card/50 p-6 shadow-fintech">
         <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
           <Users className="h-5 w-5 text-primary" />
           Employees
@@ -143,7 +150,7 @@ export default function DashboardPage() {
 
       <PendingWithdrawals businessId={businessId} onComplete={refetchStreams} />
 
-      <section>
+      <section className="rounded-2xl border border-border/60 bg-card/50 p-6 shadow-fintech">
         <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
           <Send className="h-5 w-5 text-primary" />
           Run Payroll
@@ -158,9 +165,10 @@ export default function DashboardPage() {
         />
       </section>
 
-      <section>
+      <section className="rounded-2xl border border-border/60 bg-card/50 p-6 shadow-fintech">
         <PayrollHistory batches={payrollBatches} loading={payrollHistoryLoading} />
       </section>
+      </div>
     </div>
   )
 }

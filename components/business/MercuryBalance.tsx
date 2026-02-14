@@ -19,7 +19,7 @@ export function MercuryBalance() {
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="rounded-2xl border-border/60 bg-card/50 p-6 shadow-fintech">
         <div className="flex items-center gap-3">
           <LoadingSpinner className="h-5 w-5 text-primary" />
           <span className="text-muted-foreground">Loading balance...</span>
@@ -29,7 +29,7 @@ export function MercuryBalance() {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="rounded-2xl border-border/60 bg-card/50 p-6 shadow-fintech">
       <div className="flex items-center gap-2 mb-2">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <Banknote className="h-4 w-4" />
