@@ -41,7 +41,7 @@ export function useEmployees(businessId: string) {
 
   async function updateEmployee(
     id: string,
-    updates: Partial<Pick<Employee, 'name' | 'email' | 'wallet_address' | 'salary_amount' | 'salary_currency' | 'country'>>
+    updates: Partial<Pick<Employee, 'name' | 'email' | 'wallet_address' | 'salary_amount' | 'salary_currency' | 'country' | 'auto_convert' | 'target_currency'>>
   ) {
     const payload: Record<string, unknown> = { id, ...updates }
     if (payload.wallet_address !== undefined) {

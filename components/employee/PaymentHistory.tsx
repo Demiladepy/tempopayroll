@@ -8,6 +8,8 @@ interface Payment {
   id: string
   amount: number
   currency: string
+  display_currency?: string | null
+  display_amount?: number | null
   tx_hash: string | null
   status: string
   created_at: string
@@ -44,7 +46,21 @@ export function PaymentHistory({ payments }: PaymentHistoryProps) {
           >
             <div>
               <p className="font-medium">
-                ${Number(payment.amount).toLocaleString()} {payment.currency}
+                {payment.display_currency && payment.display_amount != null
+                  ? (payment.display_currency === 'BRL'
+                      ? 'R$'
+                      : payment.display_currency === 'INR'
+                        ? '₹'
+                        : payment.display_currency === 'NGN'
+                          ? '₦'
+                          : '$') +
+                    Number(payment.display_amount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }) +
+                    ' ' +
+                    payment.display_currency
+                  : `$${Number(payment.amount).toLocaleString()} ${payment.currency}`}
               </p>
               <p className="text-xs text-muted-foreground">
                 {formatDate(payment.created_at)}

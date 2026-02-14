@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import type { Employee } from '@/types/employee'
+import type { Employee, TargetCurrency } from '@/types/employee'
 import {
   isValidAddress,
   isValidEmail,
@@ -23,7 +23,7 @@ interface EditEmployeeModalProps {
   onOpenChange: (open: boolean) => void
   onSave: (
     id: string,
-    updates: Partial<Pick<Employee, 'name' | 'email' | 'wallet_address' | 'salary_amount' | 'salary_currency' | 'country'>>
+    updates: Partial<Pick<Employee, 'name' | 'email' | 'wallet_address' | 'salary_amount' | 'salary_currency' | 'country' | 'auto_convert' | 'target_currency'>>
   ) => Promise<void>
 }
 
@@ -41,6 +41,8 @@ export function EditEmployeeModal({
     wallet_address: '',
     salary_amount: '',
     country: '',
+    auto_convert: false,
+    target_currency: 'USDC' as TargetCurrency,
   })
 
   useEffect(() => {
@@ -51,6 +53,8 @@ export function EditEmployeeModal({
         wallet_address: employee.wallet_address,
         salary_amount: String(employee.salary_amount),
         country: employee.country ?? '',
+        auto_convert: Boolean(employee.auto_convert),
+        target_currency: (employee.target_currency as TargetCurrency) || 'USDC',
       })
       setFieldErrors({})
     }
@@ -87,6 +91,8 @@ export function EditEmployeeModal({
         salary_amount: salary,
         salary_currency: 'USDC',
         country: formData.country || null,
+        auto_convert: formData.auto_convert,
+        target_currency: formData.target_currency,
       })
       onOpenChange(false)
     } catch (error) {
@@ -178,6 +184,43 @@ export function EditEmployeeModal({
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="edit-auto_convert"
+                checked={formData.auto_convert}
+                onChange={(e) =>
+                  setFormData({ ...formData, auto_convert: e.target.checked })
+                }
+                className="h-4 w-4 rounded border-input"
+              />
+              <Label htmlFor="edit-auto_convert" className="font-normal cursor-pointer">
+                Auto-convert to local currency on receipt
+              </Label>
+            </div>
+            {formData.auto_convert && (
+              <div>
+                <Label htmlFor="edit-target_currency">Target currency</Label>
+                <select
+                  id="edit-target_currency"
+                  value={formData.target_currency}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      target_currency: e.target.value as TargetCurrency,
+                    })
+                  }
+                  className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <option value="USDC">USDC</option>
+                  <option value="BRL">BRL</option>
+                  <option value="INR">INR</option>
+                  <option value="NGN">NGN</option>
+                </select>
+              </div>
+            )}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Saving...' : 'Save changes'}

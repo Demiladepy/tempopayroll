@@ -6,12 +6,14 @@ import { useBalance } from 'wagmi'
 import { Wallet } from 'lucide-react'
 import { USDC_ADDRESS } from '@/lib/tempo/config'
 import { formatUnits } from 'viem'
+import { convertUsdcToLocal, type LocalCurrency } from '@/lib/currency/rates'
 
 interface WalletCardProps {
   employee: {
     name: string
     salary_amount: number
     status: string
+    target_currency?: string | null
     [key: string]: unknown
   } | null
   walletAddress?: string
@@ -24,6 +26,24 @@ export function WalletCard({ employee, walletAddress }: WalletCardProps) {
     chainId: 42431,
   })
 
+  const usdcBalance = balance ? parseFloat(formatUnits(balance.value, 6)) : 0
+  const showLocalCurrency =
+    employee?.target_currency &&
+    employee.target_currency !== 'USDC' &&
+    ['BRL', 'INR', 'NGN'].includes(employee.target_currency)
+  const localAmount = showLocalCurrency
+    ? convertUsdcToLocal(usdcBalance, employee.target_currency as LocalCurrency)
+    : 0
+  const currencySymbol = showLocalCurrency
+    ? (employee.target_currency === 'BRL'
+        ? 'R$'
+        : employee.target_currency === 'INR'
+          ? '₹'
+          : employee.target_currency === 'NGN'
+            ? '₦'
+            : '')
+    : '$'
+
   return (
     <Card className="p-6">
       <div className="space-y-4">
@@ -33,12 +53,19 @@ export function WalletCard({ employee, walletAddress }: WalletCardProps) {
             Wallet Balance
           </p>
           <p className="text-4xl font-bold tracking-tight">
-            $
-            {balance
-              ? parseFloat(formatUnits(balance.value, 6)).toFixed(2)
-              : '0.00'}
+            {currencySymbol}
+            {showLocalCurrency
+              ? localAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              : usdcBalance.toFixed(2)}
           </p>
-          <p className="text-sm text-muted-foreground">USDC</p>
+          <p className="text-sm text-muted-foreground">
+            {showLocalCurrency ? employee!.target_currency : 'USDC'}
+            {showLocalCurrency && (
+              <span className="ml-2 text-muted-foreground/80">
+                (${usdcBalance.toFixed(2)} USDC)
+              </span>
+            )}
+          </p>
         </div>
 
         {employee && (

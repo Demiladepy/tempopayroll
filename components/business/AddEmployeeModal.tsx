@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Plus } from 'lucide-react'
-import type { EmployeeInsert } from '@/types/employee'
+import type { EmployeeInsert, TargetCurrency } from '@/types/employee'
 import {
   isValidAddress,
   isValidEmail,
@@ -33,6 +33,8 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
     wallet_address: '',
     salary_amount: '',
     country: '',
+    auto_convert: false,
+    target_currency: 'USDC' as TargetCurrency,
   })
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
@@ -68,6 +70,8 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
         salary_currency: 'USDC',
         country: formData.country || null,
         status: 'active',
+        auto_convert: formData.auto_convert,
+        target_currency: formData.target_currency,
       })
       setOpen(false)
       setFormData({
@@ -76,6 +80,8 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
         wallet_address: '',
         salary_amount: '',
         country: '',
+        auto_convert: false,
+        target_currency: 'USDC',
       })
     } catch (error) {
       console.error('Failed to add employee:', error)
@@ -172,6 +178,43 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
                 }
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="auto_convert"
+                checked={formData.auto_convert}
+                onChange={(e) =>
+                  setFormData({ ...formData, auto_convert: e.target.checked })
+                }
+                className="h-4 w-4 rounded border-input"
+              />
+              <Label htmlFor="auto_convert" className="font-normal cursor-pointer">
+                Auto-convert to local currency on receipt
+              </Label>
+            </div>
+            {formData.auto_convert && (
+              <div>
+                <Label htmlFor="target_currency">Target currency</Label>
+                <select
+                  id="target_currency"
+                  value={formData.target_currency}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      target_currency: e.target.value as TargetCurrency,
+                    })
+                  }
+                  className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <option value="USDC">USDC</option>
+                  <option value="BRL">BRL</option>
+                  <option value="INR">INR</option>
+                  <option value="NGN">NGN</option>
+                </select>
+              </div>
+            )}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Adding...' : 'Add Employee'}

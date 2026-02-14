@@ -46,6 +46,8 @@ export interface Database {
           salary_currency: string
           country: string | null
           status: string
+          auto_convert: boolean
+          target_currency: string
           created_at: string
         }
         Insert: {
@@ -58,6 +60,8 @@ export interface Database {
           salary_currency?: string
           country?: string | null
           status?: string
+          auto_convert?: boolean
+          target_currency?: string
           created_at?: string
         }
         Update: {
@@ -70,6 +74,8 @@ export interface Database {
           salary_currency?: string
           country?: string | null
           status?: string
+          auto_convert?: boolean
+          target_currency?: string
           created_at?: string
         }
       }
@@ -80,6 +86,8 @@ export interface Database {
           employee_id: string | null
           amount: number
           currency: string
+          display_currency: string | null
+          display_amount: number | null
           tx_hash: string | null
           status: string
           created_at: string
@@ -90,6 +98,8 @@ export interface Database {
           employee_id?: string | null
           amount: number
           currency?: string
+          display_currency?: string | null
+          display_amount?: number | null
           tx_hash?: string | null
           status?: string
           created_at?: string
@@ -100,6 +110,8 @@ export interface Database {
           employee_id?: string | null
           amount?: number
           currency?: string
+          display_currency?: string | null
+          display_amount?: number | null
           tx_hash?: string | null
           status?: string
           created_at?: string

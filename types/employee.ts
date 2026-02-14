@@ -1,3 +1,5 @@
+export type TargetCurrency = 'USDC' | 'BRL' | 'INR' | 'NGN'
+
 export interface Employee {
   id: string
   business_id: string
@@ -8,6 +10,8 @@ export interface Employee {
   salary_currency: string
   country: string | null
   status: string
+  auto_convert?: boolean
+  target_currency?: string
   created_at: string
 }
 

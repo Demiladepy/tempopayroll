@@ -4,6 +4,8 @@ export interface PayrollTransaction {
   employee_id: string | null
   amount: number
   currency: string
+  display_currency?: string | null
+  display_amount?: number | null
   tx_hash: string | null
   status: string
   created_at: string

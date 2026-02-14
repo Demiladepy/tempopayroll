@@ -7,8 +7,12 @@ import { supabase } from '@/lib/supabase/client'
 import { useEmployees } from '@/hooks/useEmployees'
 import { useBusiness } from '@/hooks/useBusiness'
 import { usePayrollHistory } from '@/hooks/usePayrollHistory'
+import { useStreams } from '@/hooks/useStreams'
 import { EmployeeList } from '@/components/business/EmployeeList'
 import { PayrollHistory } from '@/components/business/PayrollHistory'
+import { StreamingPayroll } from '@/components/business/StreamingPayroll'
+import { PendingWithdrawals } from '@/components/business/PendingWithdrawals'
+import { AIAssistantCard } from '@/components/business/AIAssistantCard'
 import { AddEmployeeModal } from '@/components/business/AddEmployeeModal'
 import { BusinessProfile } from '@/components/business/BusinessProfile'
 import { PayrollButton } from '@/components/business/PayrollButton'
@@ -25,6 +29,7 @@ export default function DashboardPage() {
   const { batches: payrollBatches, loading: payrollHistoryLoading, refetch: refetchPayrollHistory } = usePayrollHistory(businessId)
   const { employees, loading, addEmployee, updateEmployee, removeEmployee, refetch } =
     useEmployees(businessId ?? '')
+  const { streams, loading: streamsLoading, createStream, refetch: refetchStreams } = useStreams(businessId)
 
   useEffect(() => {
     if (!authenticated || !user?.wallet?.address) return
@@ -107,6 +112,7 @@ export default function DashboardPage() {
 
       <BusinessProfile business={business} onUpdate={updateBusiness} />
       <MercuryBalance />
+      <AIAssistantCard businessId={businessId} />
 
       <section>
         <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
@@ -126,6 +132,16 @@ export default function DashboardPage() {
           />
         )}
       </section>
+
+      <StreamingPayroll
+        businessId={businessId}
+        employees={employees}
+        streams={streams}
+        loading={streamsLoading}
+        onCreateStream={createStream}
+      />
+
+      <PendingWithdrawals businessId={businessId} onComplete={refetchStreams} />
 
       <section>
         <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">

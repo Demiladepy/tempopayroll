@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { WalletCard } from '@/components/employee/WalletCard'
 import { PaymentHistory } from '@/components/employee/PaymentHistory'
+import { StreamingBalance } from '@/components/employee/StreamingBalance'
 import { PasskeyLogin } from '@/components/employee/PasskeyLogin'
 import { Button } from '@/components/ui/button'
 import { LogOut, Wallet } from 'lucide-react'
@@ -92,6 +93,7 @@ export default function EmployeePage() {
           employee={employee}
           walletAddress={user.wallet?.address ?? undefined}
         />
+        {employee && <StreamingBalance employeeId={employee.id} />}
         <PaymentHistory payments={payments} />
       </div>
     </div>

@@ -18,12 +18,13 @@ Use this before submitting or deploying.
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `NEXT_PUBLIC_TEMPO_RPC` (optional; defaults in code)
   - `NEXT_PUBLIC_USDC_ADDRESS`
+  - `ANTHROPIC_API_KEY` (optional; for AI Payroll Assistant recommendations)
   - `DATABASE_URL` and `DIRECT_URL` (for Prisma; optional if not using Prisma CLI)
 
 ## Database
 
 - [ ] Supabase project created
-- [ ] `supabase/schema.sql` run in Supabase SQL Editor (tables: businesses, employees, payroll_transactions, payroll_batches)
+- [ ] `supabase/schema.sql` run in Supabase SQL Editor (tables: businesses, employees, payroll_transactions, payroll_batches, payroll_streams, withdrawal_requests; employees have auto_convert, target_currency; payroll_transactions have display_currency, display_amount)
 
 ## Local test
 
@@ -49,4 +50,4 @@ Use this before submitting or deploying.
 
 - **Mercury** is mock only; balance is static.
 - **RLS** is commented out in `supabase/schema.sql`; enable and add policies when using Supabase Auth or API-only writes with server-side verification.
-- **API routes** in use: `/api/employees` (GET, POST, PATCH, DELETE), `/api/payroll` (POST for recording runs).
+- **API routes** in use: `/api/employees` (GET, POST, PATCH, DELETE), `/api/payroll` (POST for recording runs), `/api/streams` (GET, POST), `/api/streams/withdraw` (GET, POST), `/api/streams/withdraw/complete` (POST), `/api/ai/recommendations` (GET).

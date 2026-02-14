@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const { business_id, name, email, wallet_address, salary_amount, salary_currency, country } =
+  const { business_id, name, email, wallet_address, salary_amount, salary_currency, country, auto_convert, target_currency } =
     body
 
   if (
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
       salary_currency: salary_currency ?? 'USDC',
       country: country ?? null,
       status: 'active',
+      auto_convert: Boolean(auto_convert),
+      target_currency: target_currency ?? 'USDC',
     })
     .select()
     .single()
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   const body = await request.json()
-  const { id, name, email, wallet_address, salary_amount, salary_currency, country } = body
+  const { id, name, email, wallet_address, salary_amount, salary_currency, country, auto_convert, target_currency } = body
 
   if (!id) {
     return NextResponse.json({ error: 'id required' }, { status: 400 })
@@ -78,6 +80,8 @@ export async function PATCH(request: NextRequest) {
   if (salary_amount !== undefined) updates.salary_amount = Number(salary_amount)
   if (salary_currency !== undefined) updates.salary_currency = salary_currency
   if (country !== undefined) updates.country = country || null
+  if (auto_convert !== undefined) updates.auto_convert = Boolean(auto_convert)
+  if (target_currency !== undefined) updates.target_currency = target_currency
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No updates provided' }, { status: 400 })

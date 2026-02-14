@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
+import { convertUsdcToLocal, type LocalCurrency } from '@/lib/currency/rates'
 
 // Record payroll batch and transactions (e.g. after client-side execution)
 export async function POST(request: NextRequest) {
@@ -14,6 +15,23 @@ export async function POST(request: NextRequest) {
   }
 
   for (const tx of transactions) {
+    let display_currency: string | null = null
+    let display_amount: number | null = null
+
+    if (tx.employee_id) {
+      const { data: employee } = await supabase
+        .from('employees')
+        .select('auto_convert, target_currency')
+        .eq('id', tx.employee_id)
+        .single()
+
+      if (employee?.auto_convert && employee?.target_currency && employee.target_currency !== 'USDC') {
+        const target = employee.target_currency as LocalCurrency
+        display_currency = target
+        display_amount = convertUsdcToLocal(Number(tx.amount), target)
+      }
+    }
+
     const { error: txError } = await supabase
       .from('payroll_transactions')
       .insert({
@@ -21,6 +39,8 @@ export async function POST(request: NextRequest) {
         employee_id: tx.employee_id ?? null,
         amount: tx.amount,
         currency: tx.currency ?? 'USDC',
+        display_currency: display_currency ?? null,
+        display_amount: display_amount ?? null,
         tx_hash: tx.tx_hash ?? null,
         status: tx.status ?? 'confirmed',
       })
