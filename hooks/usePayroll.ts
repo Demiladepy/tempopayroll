@@ -3,7 +3,6 @@ import { useWallets } from '@privy-io/react-auth'
 import { createWalletClient, custom, type Address } from 'viem'
 import { tempoTestnet } from '@/lib/tempo/config'
 import { executePayroll, type PayrollRecipient } from '@/lib/tempo/payroll'
-import { supabase } from '@/lib/supabase/client'
 
 interface EmployeeForPayroll {
   id: string
@@ -46,24 +45,30 @@ export function usePayroll() {
         recipients
       )
 
-      for (let i = 0; i < employees.length; i++) {
-        await supabase.from('payroll_transactions').insert({
-          business_id: businessId,
-          employee_id: employees[i].id,
-          amount: employees[i].salary_amount,
-          currency: 'USDC',
-          tx_hash: txHashes[i],
-          status: 'confirmed',
-        })
-      }
-
-      await supabase.from('payroll_batches').insert({
-        business_id: businessId,
-        total_amount: recipients.reduce((sum, r) => sum + r.amount, 0),
-        employee_count: employees.length,
-        batch_tx_hash: txHashes[0],
+      const totalAmount = recipients.reduce((sum, r) => sum + r.amount, 0)
+      const transactions = employees.map((emp, i) => ({
+        employee_id: emp.id,
+        amount: emp.salary_amount,
+        currency: 'USDC',
+        tx_hash: txHashes[i] ?? null,
         status: 'confirmed',
+      }))
+
+      const res = await fetch('/api/payroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          business_id: businessId,
+          transactions,
+          total_amount: totalAmount,
+          batch_tx_hash: txHashes[0] ?? null,
+        }),
       })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error ?? 'Failed to record payroll')
+      }
 
       return txHashes
     } catch (err: unknown) {

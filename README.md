@@ -40,6 +40,16 @@ Professional payroll system connecting Mercury business accounts to Tempo blockc
    npm run dev
    ```
 
+## Before you submit
+
+- [ ] **Build passes:** `npm run build`
+- [ ] **Env set:** `.env.local` has all required vars (do not commit; use `.env.example` as reference)
+- [ ] **DB ready:** Supabase tables created via `supabase/schema.sql`
+- [ ] **Smoke test:** Run `npm run dev`, open dashboard → connect wallet → add one employee → see payroll section and history
+- [ ] **Deploy:** Push to GitHub, connect to Vercel, add env vars, deploy (see Deploy to Vercel below)
+
+See `SUBMISSION.md` for a detailed submission checklist.
+
 ## What’s left (launch checklist)
 
 | Item | Status |

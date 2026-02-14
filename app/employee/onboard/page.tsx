@@ -3,9 +3,10 @@
 import { usePrivy } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { PasskeyLogin } from '@/components/employee/PasskeyLogin'
 
 export default function EmployeeOnboardPage() {
-  const { user, login } = usePrivy()
+  const { user } = usePrivy()
 
   if (user) {
     return (
@@ -35,9 +36,7 @@ export default function EmployeeOnboardPage() {
           Sign in with your passkey to get your wallet address. Share this with
           your employer to receive payroll.
         </p>
-        <Button onClick={login} className="w-full">
-          Sign in with Passkey
-        </Button>
+        <PasskeyLogin label="Sign in with Passkey" className="w-full" />
       </Card>
     </div>
   )

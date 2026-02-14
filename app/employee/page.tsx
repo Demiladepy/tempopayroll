@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { WalletCard } from '@/components/employee/WalletCard'
 import { PaymentHistory } from '@/components/employee/PaymentHistory'
+import { PasskeyLogin } from '@/components/employee/PasskeyLogin'
 import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
 
 export default function EmployeePage() {
-  const { user, logout, login } = usePrivy()
+  const { user, logout } = usePrivy()
   const [employee, setEmployee] = useState<{
     id: string
     name: string
@@ -63,7 +64,7 @@ export default function EmployeePage() {
         <p className="text-muted-foreground">
           Login with your passkey to view your wallet
         </p>
-        <Button onClick={login}>Login with Passkey</Button>
+        <PasskeyLogin />
       </div>
     )
   }

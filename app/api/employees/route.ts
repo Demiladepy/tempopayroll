@@ -62,3 +62,55 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(data)
 }
+
+export async function PATCH(request: NextRequest) {
+  const body = await request.json()
+  const { id, name, email, wallet_address, salary_amount, salary_currency, country } = body
+
+  if (!id) {
+    return NextResponse.json({ error: 'id required' }, { status: 400 })
+  }
+
+  const updates: Record<string, unknown> = {}
+  if (name !== undefined) updates.name = name
+  if (email !== undefined) updates.email = email
+  if (wallet_address !== undefined) updates.wallet_address = String(wallet_address).trim().toLowerCase()
+  if (salary_amount !== undefined) updates.salary_amount = Number(salary_amount)
+  if (salary_currency !== undefined) updates.salary_currency = salary_currency
+  if (country !== undefined) updates.country = country || null
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'No updates provided' }, { status: 400 })
+  }
+
+  const { data, error } = await supabase
+    .from('employees')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json(data)
+}
+
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.searchParams.get('id')
+  if (!id) {
+    return NextResponse.json({ error: 'id required' }, { status: 400 })
+  }
+
+  const { error } = await supabase
+    .from('employees')
+    .update({ status: 'inactive' })
+    .eq('id', id)
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
+}

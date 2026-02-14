@@ -63,7 +63,7 @@ export function PayrollButton({
     0
   )
 
-  const balanceWei = usdcBalance?.value ?? 0n
+  const balanceWei = usdcBalance?.value ?? BigInt(0)
   const balanceUsdc = usdcBalance ? Number(formatUnits(balanceWei, 6)) : 0
   const insufficientBalance = totalAmount > 0 && balanceUsdc < totalAmount
 

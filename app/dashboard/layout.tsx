@@ -1,4 +1,4 @@
-import { Header } from '@/components/shared/Header'
+import { Navbar } from '@/components/shared/Navbar'
 
 export default function DashboardLayout({
   children,
@@ -7,7 +7,7 @@ export default function DashboardLayout({
 }) {
   return (
     <>
-      <Header />
+      <Navbar />
       <main className="container mx-auto px-4 py-8">{children}</main>
     </>
   )
