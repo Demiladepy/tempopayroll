@@ -2,6 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils/format'
+import { Receipt } from 'lucide-react'
 
 interface Payment {
   id: string
@@ -20,7 +21,10 @@ export function PaymentHistory({ payments }: PaymentHistoryProps) {
   if (payments.length === 0) {
     return (
       <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold">Payment History</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+          <Receipt className="h-5 w-5 text-primary" />
+          Payment History
+        </h2>
         <p className="text-sm text-muted-foreground">No payments yet.</p>
       </Card>
     )
@@ -28,7 +32,10 @@ export function PaymentHistory({ payments }: PaymentHistoryProps) {
 
   return (
     <Card className="p-6">
-      <h2 className="mb-4 text-lg font-semibold">Payment History</h2>
+      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+        <Receipt className="h-5 w-5 text-primary" />
+        Payment History
+      </h2>
       <div className="space-y-3">
         {payments.map((payment) => (
           <div

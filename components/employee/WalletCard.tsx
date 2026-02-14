@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useBalance } from 'wagmi'
+import { Wallet } from 'lucide-react'
 import { USDC_ADDRESS } from '@/lib/tempo/config'
 import { formatUnits } from 'viem'
 
@@ -27,8 +28,11 @@ export function WalletCard({ employee, walletAddress }: WalletCardProps) {
     <Card className="p-6">
       <div className="space-y-4">
         <div>
-          <p className="text-sm text-muted-foreground">Wallet Balance</p>
-          <p className="text-4xl font-bold">
+          <p className="mb-1 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Wallet className="h-4 w-4" />
+            Wallet Balance
+          </p>
+          <p className="text-4xl font-bold tracking-tight">
             $
             {balance
               ? parseFloat(formatUnits(balance.value, 6)).toFixed(2)

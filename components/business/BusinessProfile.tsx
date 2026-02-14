@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Pencil } from 'lucide-react'
+import { Pencil, Building2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -67,8 +67,13 @@ export function BusinessProfile({ business, onUpdate }: BusinessProfileProps) {
       <Card className="p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Business profile</h2>
-            <p className="mt-1 text-2xl font-bold">{business.name}</p>
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Building2 className="h-4 w-4" />
+              </span>
+              Business profile
+            </h2>
+            <p className="mt-3 text-2xl font-bold">{business.name}</p>
             <p className="text-sm text-muted-foreground">{business.email}</p>
           </div>
           <Button variant="outline" size="sm" onClick={openModal}>

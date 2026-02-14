@@ -8,7 +8,7 @@ import { useBalance } from 'wagmi'
 import { USDC_ADDRESS } from '@/lib/tempo/config'
 import { formatUnits } from 'viem'
 import type { Employee } from '@/types/employee'
-import { Send, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Send, CheckCircle, AlertTriangle, Wallet } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface PayrollButtonProps {
@@ -68,14 +68,15 @@ export function PayrollButton({
   const insufficientBalance = totalAmount > 0 && balanceUsdc < totalAmount
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {walletAddress && (
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Wallet className="h-4 w-4" />
           Wallet balance: ${balanceUsdc.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC
         </p>
       )}
       {insufficientBalance && (
-        <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+        <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
           <AlertTriangle className="h-5 w-5 shrink-0" />
           <span>
             Insufficient USDC. You need ${totalAmount.toLocaleString()} but have ${balanceUsdc.toLocaleString(undefined, { minimumFractionDigits: 2 })}.

@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils/format'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, History } from 'lucide-react'
 
 const EXPLORER_TX_URL = 'https://explorer.testnet.tempo.org/tx'
 
@@ -24,7 +24,10 @@ export function PayrollHistory({ batches, loading }: PayrollHistoryProps) {
   if (loading) {
     return (
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Payroll history</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+          <History className="h-5 w-5 text-primary" />
+          Payroll history
+        </h2>
         <p className="text-sm text-muted-foreground">Loading...</p>
       </Card>
     )
@@ -33,7 +36,10 @@ export function PayrollHistory({ batches, loading }: PayrollHistoryProps) {
   if (batches.length === 0) {
     return (
       <Card className="p-6">
-        <h2 className="mb-4 text-xl font-semibold">Payroll history</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+          <History className="h-5 w-5 text-primary" />
+          Payroll history
+        </h2>
         <p className="text-sm text-muted-foreground">No payroll runs yet.</p>
       </Card>
     )
@@ -41,7 +47,10 @@ export function PayrollHistory({ batches, loading }: PayrollHistoryProps) {
 
   return (
     <Card className="p-6">
-      <h2 className="mb-4 text-xl font-semibold">Payroll history</h2>
+      <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+        <History className="h-5 w-5 text-primary" />
+        Payroll history
+      </h2>
       <div className="space-y-3">
         {batches.map((batch) => (
           <div

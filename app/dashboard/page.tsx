@@ -15,6 +15,7 @@ import { PayrollButton } from '@/components/business/PayrollButton'
 import { MercuryBalance } from '@/components/business/MercuryBalance'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
+import { Wallet, Users, Send } from 'lucide-react'
 
 export default function DashboardPage() {
   const { ready, authenticated, user, login } = usePrivy()
@@ -73,12 +74,18 @@ export default function DashboardPage() {
 
   if (!authenticated) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-6">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <Wallet className="h-8 w-8" />
+        </div>
         <h1 className="text-2xl font-bold">Business Dashboard</h1>
-        <p className="text-muted-foreground">
+        <p className="text-center text-muted-foreground max-w-sm">
           Sign in with your wallet to manage payroll.
         </p>
-        <Button onClick={login}>Connect Wallet</Button>
+        <Button onClick={login} size="lg" className="gap-2">
+          <Wallet className="h-5 w-5" />
+          Connect Wallet
+        </Button>
       </div>
     )
   }
@@ -92,9 +99,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <AddEmployeeModal businessId={businessId} onAdd={addEmployee} />
       </div>
 
@@ -102,7 +109,10 @@ export default function DashboardPage() {
       <MercuryBalance />
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold">Employees</h2>
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+          <Users className="h-5 w-5 text-primary" />
+          Employees
+        </h2>
         {loading ? (
           <div className="flex items-center gap-2 py-8">
             <LoadingSpinner className="h-5 w-5" />
@@ -118,6 +128,10 @@ export default function DashboardPage() {
       </section>
 
       <section>
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+          <Send className="h-5 w-5 text-primary" />
+          Run Payroll
+        </h2>
         <PayrollButton
           businessId={businessId}
           employees={employees}
