@@ -1,32 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus } from 'lucide-react'
-import type { EmployeeInsert } from '@/types/employee'
+import type { Employee } from '@/types/employee'
 import {
   isValidAddress,
   isValidEmail,
   isValidSalary,
 } from '@/lib/utils/validation'
 
-interface AddEmployeeModalProps {
-  businessId: string
-  onAdd: (employee: EmployeeInsert) => Promise<void>
+interface EditEmployeeModalProps {
+  employee: Employee | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (
+    id: string,
+    updates: Partial<Pick<Employee, 'name' | 'email' | 'wallet_address' | 'salary_amount' | 'salary_currency' | 'country'>>
+  ) => Promise<void>
 }
 
-export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
-  const [open, setOpen] = useState(false)
+export function EditEmployeeModal({
+  employee,
+  open,
+  onOpenChange,
+  onSave,
+}: EditEmployeeModalProps) {
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,10 +42,23 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
     salary_amount: '',
     country: '',
   })
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (employee) {
+      setFormData({
+        name: employee.name,
+        email: employee.email,
+        wallet_address: employee.wallet_address,
+        salary_amount: String(employee.salary_amount),
+        country: employee.country ?? '',
+      })
+      setFieldErrors({})
+    }
+  }, [employee, open])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!employee) return
     setFieldErrors({})
 
     const wallet = formData.wallet_address.trim().toLowerCase()
@@ -59,52 +80,39 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
 
     setLoading(true)
     try {
-      await onAdd({
-        business_id: businessId,
+      await onSave(employee.id, {
         name: formData.name.trim(),
         email: formData.email.trim(),
         wallet_address: wallet,
         salary_amount: salary,
         salary_currency: 'USDC',
         country: formData.country || null,
-        status: 'active',
       })
-      setOpen(false)
-      setFormData({
-        name: '',
-        email: '',
-        wallet_address: '',
-        salary_amount: '',
-        country: '',
-      })
+      onOpenChange(false)
     } catch (error) {
-      console.error('Failed to add employee:', error)
+      console.error('Failed to update employee:', error)
     } finally {
       setLoading(false)
     }
   }
 
+  if (!employee) return null
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Employee
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Employee</DialogTitle>
+          <DialogTitle>Edit Employee</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="edit-name">Full Name</Label>
             <Input
-              id="name"
+              id="edit-name"
               value={formData.name}
               onChange={(e) => {
                 setFormData({ ...formData, name: e.target.value })
-                if (fieldErrors.name) setFieldErrors((e) => ({ ...e, name: '' }))
+                if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: '' }))
               }}
               required
             />
@@ -113,14 +121,14 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
             )}
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="edit-email">Email</Label>
             <Input
-              id="email"
+              id="edit-email"
               type="email"
               value={formData.email}
               onChange={(e) => {
                 setFormData({ ...formData, email: e.target.value })
-                if (fieldErrors.email) setFieldErrors((e) => ({ ...e, email: '' }))
+                if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }))
               }}
               required
             />
@@ -129,13 +137,13 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
             )}
           </div>
           <div>
-            <Label htmlFor="wallet">Wallet Address</Label>
+            <Label htmlFor="edit-wallet">Wallet Address</Label>
             <Input
-              id="wallet"
+              id="edit-wallet"
               value={formData.wallet_address}
               onChange={(e) => {
                 setFormData({ ...formData, wallet_address: e.target.value })
-                if (fieldErrors.wallet_address) setFieldErrors((e) => ({ ...e, wallet_address: '' }))
+                if (fieldErrors.wallet_address) setFieldErrors((prev) => ({ ...prev, wallet_address: '' }))
               }}
               placeholder="0x..."
               required
@@ -146,15 +154,15 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="salary">Salary (USDC)</Label>
+              <Label htmlFor="edit-salary">Salary (USDC)</Label>
               <Input
-                id="salary"
+                id="edit-salary"
                 type="number"
                 step="0.01"
                 value={formData.salary_amount}
                 onChange={(e) => {
                   setFormData({ ...formData, salary_amount: e.target.value })
-                  if (fieldErrors.salary_amount) setFieldErrors((e) => ({ ...e, salary_amount: '' }))
+                  if (fieldErrors.salary_amount) setFieldErrors((prev) => ({ ...prev, salary_amount: '' }))
                 }}
                 required
               />
@@ -163,18 +171,16 @@ export function AddEmployeeModal({ businessId, onAdd }: AddEmployeeModalProps) {
               )}
             </div>
             <div>
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="edit-country">Country</Label>
               <Input
-                id="country"
+                id="edit-country"
                 value={formData.country}
-                onChange={(e) =>
-                  setFormData({ ...formData, country: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
               />
             </div>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Employee'}
+            {loading ? 'Saving...' : 'Save changes'}
           </Button>
         </form>
       </DialogContent>

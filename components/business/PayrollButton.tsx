@@ -3,8 +3,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { usePayroll } from '@/hooks/usePayroll'
+import { useWallets } from '@privy-io/react-auth'
+import { useBalance } from 'wagmi'
+import { USDC_ADDRESS } from '@/lib/tempo/config'
+import { formatUnits } from 'viem'
 import type { Employee } from '@/types/employee'
-import { Send, CheckCircle } from 'lucide-react'
+import { Send, CheckCircle, AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface PayrollButtonProps {
@@ -21,6 +25,13 @@ export function PayrollButton({
   onSuccess,
 }: PayrollButtonProps) {
   const { runPayroll, loading } = usePayroll()
+  const { wallets } = useWallets()
+  const walletAddress = wallets[0]?.address
+  const { data: usdcBalance } = useBalance({
+    address: walletAddress as `0x${string}` | undefined,
+    token: USDC_ADDRESS,
+    chainId: 42431,
+  })
   const { toast } = useToast()
   const [success, setSuccess] = useState(false)
 
@@ -52,12 +63,29 @@ export function PayrollButton({
     0
   )
 
+  const balanceWei = usdcBalance?.value ?? 0n
+  const balanceUsdc = usdcBalance ? Number(formatUnits(balanceWei, 6)) : 0
+  const insufficientBalance = totalAmount > 0 && balanceUsdc < totalAmount
+
   return (
     <div className="space-y-2">
+      {walletAddress && (
+        <p className="text-sm text-muted-foreground text-center">
+          Wallet balance: ${balanceUsdc.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC
+        </p>
+      )}
+      {insufficientBalance && (
+        <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertTriangle className="h-5 w-5 shrink-0" />
+          <span>
+            Insufficient USDC. You need ${totalAmount.toLocaleString()} but have ${balanceUsdc.toLocaleString(undefined, { minimumFractionDigits: 2 })}.
+          </span>
+        </div>
+      )}
       <Button
         size="lg"
         onClick={handlePayroll}
-        disabled={disabled || loading || employees.length === 0}
+        disabled={disabled || loading || employees.length === 0 || insufficientBalance}
         className="w-full"
       >
         {loading ? (

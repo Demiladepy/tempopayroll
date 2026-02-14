@@ -5,8 +5,12 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { supabase } from '@/lib/supabase/client'
 import { useEmployees } from '@/hooks/useEmployees'
+import { useBusiness } from '@/hooks/useBusiness'
+import { usePayrollHistory } from '@/hooks/usePayrollHistory'
 import { EmployeeList } from '@/components/business/EmployeeList'
+import { PayrollHistory } from '@/components/business/PayrollHistory'
 import { AddEmployeeModal } from '@/components/business/AddEmployeeModal'
+import { BusinessProfile } from '@/components/business/BusinessProfile'
 import { PayrollButton } from '@/components/business/PayrollButton'
 import { MercuryBalance } from '@/components/business/MercuryBalance'
 import { Button } from '@/components/ui/button'
@@ -16,7 +20,9 @@ export default function DashboardPage() {
   const { ready, authenticated, user, login } = usePrivy()
   const { businessId, setBusinessId } = useAuthStore()
   const [initialized, setInitialized] = useState(false)
-  const { employees, loading, addEmployee, removeEmployee, refetch } =
+  const { business, updateBusiness } = useBusiness(businessId)
+  const { batches: payrollBatches, loading: payrollHistoryLoading, refetch: refetchPayrollHistory } = usePayrollHistory(businessId)
+  const { employees, loading, addEmployee, updateEmployee, removeEmployee, refetch } =
     useEmployees(businessId ?? '')
 
   useEffect(() => {
@@ -92,6 +98,7 @@ export default function DashboardPage() {
         <AddEmployeeModal businessId={businessId} onAdd={addEmployee} />
       </div>
 
+      <BusinessProfile business={business} onUpdate={updateBusiness} />
       <MercuryBalance />
 
       <section>
@@ -102,7 +109,11 @@ export default function DashboardPage() {
             <span className="text-muted-foreground">Loading employees...</span>
           </div>
         ) : (
-          <EmployeeList employees={employees} onRemove={removeEmployee} />
+          <EmployeeList
+            employees={employees}
+            onUpdate={updateEmployee}
+            onRemove={removeEmployee}
+          />
         )}
       </section>
 
@@ -110,8 +121,15 @@ export default function DashboardPage() {
         <PayrollButton
           businessId={businessId}
           employees={employees}
-          onSuccess={refetch}
+          onSuccess={() => {
+            refetch()
+            refetchPayrollHistory()
+          }}
         />
+      </section>
+
+      <section>
+        <PayrollHistory batches={payrollBatches} loading={payrollHistoryLoading} />
       </section>
     </div>
   )
